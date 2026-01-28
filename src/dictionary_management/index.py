@@ -49,6 +49,14 @@ OPTED_PUNCTUATED = Dataset(
     file_path="data/processed/OPTED-punctuated-words.txt",
     update_method=process_opted.split_punctuation()
 )
+OPTED_SUFFIX_ADDITIONS = Dataset(
+    file_path="data/processed/OPTED-suffix-additions.txt",
+    update_method=process_opted.identify_suffixes()
+)
+OPTED_SUFFIXES = Dataset(
+    file_path="data/processed/OPTED-suffixes.json",
+    update_method=process_opted.identify_suffixes()
+)
 
 def load_all(only_raw=False):
     for k, v in RAW_DATASETS.items():
