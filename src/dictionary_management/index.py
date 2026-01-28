@@ -1,5 +1,6 @@
 import process_opted
 from src.dictionary_management.Dataset import Dataset, SourceType
+from src.projects.wordle.dataset_methods import sort_wordle
 
 
 # Raw datasets
@@ -57,6 +58,11 @@ OPTED_SUFFIXES = Dataset(
     file_path="data/processed/OPTED-suffixes.json",
     update_method=process_opted.identify_suffixes()
 )
+WORDLE_VALID_ALL = Dataset(
+    file_path="data/processed/wordle_valid.txt",
+    update_method=sort_wordle()
+)
+
 
 def load_all(only_raw=False):
     for k, v in RAW_DATASETS.items():
