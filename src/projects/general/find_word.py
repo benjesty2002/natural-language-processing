@@ -1,6 +1,6 @@
 # TODO swap out direct loading for UNIGRAM_FREQ_OPTED when created
 import re
-from src.dictionary_management.index import FREQUENCIES
+from src.data_index.raw import FREQUENCIES
 
 
 def is_valid(word: str):

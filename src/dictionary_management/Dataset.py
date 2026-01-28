@@ -3,7 +3,7 @@ import os
 from enum import StrEnum
 from functools import partial
 from typing import Callable, Optional, Tuple, Union
-from raw_sources import download_kaggle_dictionary, download_public_url
+from src.dictionary_management.raw import download_kaggle_dictionary, download_public_url
 
 
 class SourceType(StrEnum):

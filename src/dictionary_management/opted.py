@@ -1,6 +1,7 @@
 from collections import defaultdict
 import json
-from index import OPTED_RAW, OPTED_VALID, FREQUENCIES
+from src.data_index.opted import OPTED_RAW, OPTED_VALID
+from src.data_index.raw import FREQUENCIES
 
 
 def split_punctuation() -> None:

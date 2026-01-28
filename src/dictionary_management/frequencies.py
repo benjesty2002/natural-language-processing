@@ -1,18 +1,21 @@
-# TODO convert this method into new form
+from typing import Optional
+from data_index.raw import FREQUENCIES
+from Dataset import Dataset
 
-def combine_with_frequencies(input_files: list[str], output_file: str, freq_file: str = "unigram_freq.csv"):
-    print(f"filtering frequency dataset with [{', '.join(input_files)}]")
+
+def combine_with_frequencies(input_files: list[Dataset], output_file: Dataset, freq_file: Optional[Dataset] = None):
+    if freq_file is None:
+        freq_file = FREQUENCIES
+    print(f"filtering frequency dataset with [{', '.join([d.file_name for d in input_files])}]")
     
     # read in all valid words
     all_valid = set()
-    for file_name in input_files:
-        with open(f"english_dictionaries/{file_name}", "r") as f:
-            all_valid = all_valid.union(set(f.read().split("\n")))
+    for dataset in input_files:
+        all_valid = all_valid.union(set(dataset.load()))
     all_valid.remove("")
     
-    with open(f"english_dictionaries/{freq_file}", "r") as freq_source,\
-         open(f"english_dictionaries/{output_file}", "w+") as freq_filtered:
-        for line in freq_source:
+    with open(output_file.file_path, "w+") as freq_filtered:
+        for line in freq_file.load():
             word = line.split(",")[0].lower()
             if word in all_valid:
                 all_valid.remove(word)
