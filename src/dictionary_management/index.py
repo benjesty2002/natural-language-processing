@@ -39,7 +39,7 @@ class Dataset():
         match self.source:
             case SourceType.KAGGLE:
                 return partial(download_kaggle_dictionary, self.url, self.file_name)
-            case "PublicURL":
+            case SourceType.PUBLIC_URL:
                 return partial(download_public_url, self.url, self.file_name)
             case _:
                 raise RuntimeError(f"Unknown source: {self.source}")
@@ -62,34 +62,34 @@ class Dataset():
         if not self.__raw_data:
             if not os.path.isfile(self.file_path):
                 self.update()
-            with open(self.file_path, "r") as f:
-                self.__raw_data = f.read()
+            with open(self.file_path, "rb") as f:
+                self.__raw_data = f.read().decode(encoding="utf-8", errors="replace")
         return self.__raw_data
     
 FREQUENCIES = Dataset(
     source=SourceType.KAGGLE, 
     url="rtatman/english-word-frequency", 
-    file_path="unigram_freq.csv"
+    file_path="data/raw/unigram_freq.csv"
 )
 OPTED_RAW = Dataset(
     source=SourceType.KAGGLE, 
     url="dfydata/the-online-plain-text-english-dictionary-opted", 
-    file_path="OPTED-Dictionary.csv"
+    file_path="data/raw/OPTED-Dictionary.csv"
 )
 WORDLE_VALID_GUESSES = Dataset(
     source=SourceType.KAGGLE, 
     url="bcruise/wordle-valid-words", 
-    file_path="valid_guesses.csv"
+    file_path="data/raw/valid_guesses.csv"
 )
 WORDLE_VALID_SOLUTIONS = Dataset(
     source=SourceType.KAGGLE, 
     url="bcruise/wordle-valid-words", 
-    file_path="valid_solutions.csv"
+    file_path="data/raw/valid_solutions.csv"
 )
 NARROW_WORD_LIST = Dataset(
     source=SourceType.PUBLIC_URL, 
     url="http://www.gwicks.net/textlists/engmix.zip", 
-    file_path="engmix.txt"
+    file_path="data/raw/engmix.txt"
 )
 
 RAW_DATASETS: dict[str, Dataset] = {
