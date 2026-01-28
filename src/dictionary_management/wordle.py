@@ -2,14 +2,8 @@ from src.data_index import wordle as wordle_data
 from src.dictionary_management.frequencies import combine_with_frequencies
 
 
-def sort_wordle():
-    guesses = wordle_data.WORDLE_VALID_GUESSES.load()[1:]
-    solutions = wordle_data.WORDLE_VALID_SOLUTIONS.load()[1:]
-    with open(wordle_data.WORDLE_VALID_ALL.file_path, "w+") as f:
-        f.write("\n".join(sorted(guesses + solutions)))
 
-def wordle_valid_freq():
-    combine_with_frequencies([wordle_data.WORDLE_VALID_ALL], wordle_data.WORDLE_VALID_FREQ)
+
 
 # remove anagrams
 def sort_word_by_letters(word):
