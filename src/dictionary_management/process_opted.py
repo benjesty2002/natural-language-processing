@@ -1,14 +1,12 @@
-from collections import defaultdict
-import json
+from index import OPTED_RAW
 
 
 def split_punctuation() -> None:
     previous_word = ""
-    with open("data/raw/unzipped/OPTED-Dictionary.csv", "r") as opted,\
-        open("data/processed/OPTED-valid-words.txt", "w+") as opted_valid,\
+    with open("data/processed/OPTED-valid-words.txt", "w+") as opted_valid,\
         open("data/processed/OPTED-hyphenated-words.txt", "w+") as opted_hyphenated,\
         open("data/processed/OPTED-punctuated-words.txt", "w+") as opted_punctuated: 
-        for line in opted:
+        for line in OPTED_RAW.load():
             word = line.split(",")[0]
             if word == previous_word or word == "":
                 continue
