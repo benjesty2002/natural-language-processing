@@ -1,5 +1,7 @@
 import process_opted
 from src.dictionary_management.Dataset import Dataset, SourceType
+from src.dictionary_management.frequencies import combine_with_frequencies
+from src.dictionary_management.wordle.dataset_methods import update_wordle_anagrams, update_wordle_unique_letters
 from src.projects.wordle.dataset_methods import sort_wordle
 
 
@@ -62,7 +64,23 @@ WORDLE_VALID_ALL = Dataset(
     file_path="data/processed/wordle_valid.txt",
     update_method=sort_wordle()
 )
-
+# TODO fill in arguments when method is updated
+WORDLE_VALID_FREQ = Dataset(
+    file_path="data/processed/wordle_valid_freq.csv",
+    update_method=combine_with_frequencies(None, None)
+)
+WORDLE_VALID_FREQ_ANAGRAM_UNIQUE = Dataset(
+    file_path="data/processed/wordle_valid_freq_anagram_unique.csv",
+    update_method=update_wordle_anagrams()
+)
+WORDLE_VALID_FREQ_ANAGRAM_DUPLICATE = Dataset(
+    file_path="data/processed/wordle_valid_freq_anagram_duplicate.csv",
+    update_method=update_wordle_anagrams()
+)
+WORDLE_UNIQUE = Dataset(
+    file_path="data/processed/wordle_unique_letters.csv",
+    update_method=update_wordle_unique_letters()
+)
 
 def load_all(only_raw=False):
     for k, v in RAW_DATASETS.items():
