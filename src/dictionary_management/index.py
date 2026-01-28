@@ -1,0 +1,109 @@
+import json
+import os
+from enum import StrEnum
+from functools import partial
+from typing import Callable, Optional, Tuple, Union
+from raw_sources import download_kaggle_dictionary, download_public_url
+
+
+class SourceType(StrEnum):
+    KAGGLE = "Kaggle"
+    PUBLIC_URL = "Public_URL"
+
+class Dataset():
+    def __init__(
+            self,
+            file_path: str, 
+            source: Optional[SourceType] = None, 
+            url: Optional[str] = None, 
+            update_method: Optional[Callable] = None,
+            description: Optional[str] = None
+            ) -> None:
+        self.file_path, self.directory, self.file_name, self.file_type = self.__expand_file_path(file_path)
+        self.source = source
+        self.url = url
+        self.update = update_method if update_method else self.__generate_update_method()
+        self.description = description
+        self.__raw_data: Union[str, None] = None
+        self.__data: Union[list, dict, None] = None
+    
+    def __expand_file_path(self, file_path: str) -> Tuple[str, str, str, str]:
+        *dir_path, file_name = file_path.split("/")
+        directory = "/".join(dir_path)
+        *_, file_type = file_name.split(".")
+        return file_path, directory, file_name, file_type
+    
+    def __generate_update_method(self) -> Callable:
+        if not self.url or not self.file_name:
+            raise RuntimeError("url and filename must be specified if no update method is provided")
+        match self.source:
+            case SourceType.KAGGLE:
+                return partial(download_kaggle_dictionary, self.url, self.file_name)
+            case "PublicURL":
+                return partial(download_public_url, self.url, self.file_name)
+            case _:
+                raise RuntimeError(f"Unknown source: {self.source}")
+    
+    def load(self) -> Union[list, dict]:
+        if not self.__data:
+            raw_content = self.load_raw()
+            match self.file_type:
+                case "json":
+                    self.__data = json.loads(raw_content)
+                case "csv":
+                    self.__data = raw_content.split("\n")
+                case _:
+                    self.__data = raw_content.split("\n")
+        if not self.__data:
+            raise RuntimeError("Failed to load data")
+        return self.__data
+
+    def load_raw(self) -> str:
+        if not self.__raw_data:
+            if not os.path.isfile(self.file_path):
+                self.update()
+            with open(self.file_path, "r") as f:
+                self.__raw_data = f.read()
+        return self.__raw_data
+    
+FREQUENCIES = Dataset(
+    source=SourceType.KAGGLE, 
+    url="rtatman/english-word-frequency", 
+    file_path="unigram_freq.csv"
+)
+OPTED_RAW = Dataset(
+    source=SourceType.KAGGLE, 
+    url="dfydata/the-online-plain-text-english-dictionary-opted", 
+    file_path="OPTED-Dictionary.csv"
+)
+WORDLE_VALID_GUESSES = Dataset(
+    source=SourceType.KAGGLE, 
+    url="bcruise/wordle-valid-words", 
+    file_path="valid_guesses.csv"
+)
+WORDLE_VALID_SOLUTIONS = Dataset(
+    source=SourceType.KAGGLE, 
+    url="bcruise/wordle-valid-words", 
+    file_path="valid_solutions.csv"
+)
+NARROW_WORD_LIST = Dataset(
+    source=SourceType.PUBLIC_URL, 
+    url="http://www.gwicks.net/textlists/engmix.zip", 
+    file_path="engmix.txt"
+)
+
+RAW_DATASETS: dict[str, Dataset] = {
+    "frequencies": FREQUENCIES,
+    "opted_raw": OPTED_RAW,
+    "wordle_valid_guesses": WORDLE_VALID_GUESSES,
+    "wordle_valid_solutions": WORDLE_VALID_SOLUTIONS,
+    "narrow_word_list_raw": NARROW_WORD_LIST,
+}
+
+
+def load_all(only_raw=False):
+    for k, v in RAW_DATASETS.items():
+        if only_raw:
+            v.load_raw()
+        else:
+            v.load()
